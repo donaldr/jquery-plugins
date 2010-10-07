@@ -128,6 +128,48 @@
     
     return this;
   };
+
+  $.fn.moveBranchToIndex = function(new_parent, index) {
+    var node = $(this);
+    var new_parent = $(new_parent);
+
+    //Reset indentation
+    indent(node, ancestorsOf(node).length * options.indent * -1); // Remove indentation
+      
+    var children = childrenOf(new_parent);
+    if(index == 0)
+    {
+      if(children.length)
+      {
+        node.insertBefore(children.eq(index));
+      }
+      else
+      {
+        node.insertAfter(new_parent);
+      }
+    }
+    else
+    {
+      node.insertAfter(children.eq(index - 1));
+    }
+
+    var parent = parentOf(node);
+    if(parent)
+    {
+      node.removeClass(options.childPrefix + parent[0].id);
+    }
+
+    node.addClass(options.childPrefix + new_parent[0].id);
+
+    childrenOf(node).reverse().each(function() {
+      move($(this), node[0]);
+    });
+
+    indent(node, (ancestorsOf(new_parent).length + 1) * options.indent); //Re-add it.
+
+    return this;
+
+  };
   
   // === Private functions
   
